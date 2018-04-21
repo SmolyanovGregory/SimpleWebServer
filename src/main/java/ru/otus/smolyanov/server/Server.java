@@ -3,13 +3,14 @@ package ru.otus.smolyanov.server;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Date;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import ru.otus.smolyanov.http.HttpRequest;
+import ru.otus.smolyanov.http.HttpResponse;
 
 public class Server extends Thread {
   private final static Logger logger = LogManager.getLogger(Server.class.getName());
@@ -34,7 +35,7 @@ public class Server extends Thread {
 
       while (!executor.isShutdown()) {
         Socket socket = serverSocket.accept();
-        logger.info("Socket - ok");
+        logger.debug("Socket - ok");
         requestQueue.add(socket);
       }
     } catch(IOException e) {
@@ -52,18 +53,19 @@ public class Server extends Thread {
           try (InputStream inputStream = socket.getInputStream(); OutputStream outputStream = socket.getOutputStream()) {
             if (inputStream.available() > 0) {
               logger.info(">>>" + inputStream.available());
-              byte[] buffer = new byte[inputStream.available()];
-              int bytes = inputStream.read(buffer);
-              String request = new String(buffer, 0, bytes);
-              logger.debug(request);
+              byte[] content = new byte[inputStream.available()];
+              int bytes = inputStream.read(content);
+             // String request = new String(buffer, 0, bytes);
+              //logger.debug(request);
 
-              String response = "HTTP/1.1 404 Not Found\n" +
-                      "Date: " + new Date() + "\n" +
-                      "Content-Type: text/plain\n" +
-                      "Connection: close\n" +
-                      "Server: Server\n" +
-                      "Pragma: no-cache\n\n" +
-                      "test message";
+              ContentParser parser = new ContentParser(content);
+
+              HttpRequest httpRequest = parser.parse();
+
+              HttpResponse httpResponse = new RequestProcessor(httpRequest).processRequest();
+
+              String response = httpResponse.toString();
+
               outputStream.write(response.getBytes());
               socket.close();
             }
