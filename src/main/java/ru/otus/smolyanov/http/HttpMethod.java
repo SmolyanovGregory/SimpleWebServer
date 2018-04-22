@@ -7,9 +7,5 @@ public enum HttpMethod {
   PUT,
   OPTIONS,
   DELETE,
-  TRACE,
-  CONNECT,
-  MOVE,
-  PROXY,
-  PRI;
+  TRACE;
 }

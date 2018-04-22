@@ -76,11 +76,10 @@ public class Server extends Thread {
       }
 
       try {
-        Thread.sleep(1000);
+        Thread.sleep(10);
       } catch (InterruptedException e) {
         logger.error(e.toString());
       }
-      logger.debug("queue size="+requestQueue.size());
     }
   }
 }

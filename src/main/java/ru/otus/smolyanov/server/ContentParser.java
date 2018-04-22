@@ -5,7 +5,7 @@ import java.util.StringTokenizer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ContentParser {
+class ContentParser {
   private final static Logger logger = LogManager.getLogger(ContentParser.class.getName());
   private byte[] content;
 
@@ -24,7 +24,6 @@ public class ContentParser {
     while (lines.hasMoreTokens()) {
       lineNumber++;
       String currentRow = lines.nextToken();
-      logger.debug(">>>"+currentRow);
 
       if (lineNumber == 1) {
         StringTokenizer firstLineTokenizer = new StringTokenizer(currentRow);
